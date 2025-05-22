@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProtekTalk Demo: Secret Number Showdown</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .game-container {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* Rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px; /* Max width for desktop */
+            width: 100%;
+        }
+        canvas {
+            display: block;
+            width: 100%; /* Make canvas responsive */
+            height: auto; /* Maintain aspect ratio */
+            background-color: #e2e8f0; /* Light gray for game background */
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+        .chat-area {
+            height: 200px; /* Fixed height for chat display */
+            overflow-y: auto;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            background-color: #f8fafc;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .chat-message {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .chat-message.human {
+            background-color: #bfdbfe; /* Blue-200 */
+            align-self: flex-end;
+            text-align: right;
+        }
+        .chat-message.bot {
+            background-color: #d1fae5; /* Green-200 */
+            align-self: flex-start;
+            text-align: left;
+        }
+        .protektalk-status {
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .protektalk-status.safe {
+            background-color: #d1fae5; /* Green-200 */
+            color: #065f46; /* Green-800 */
+        }
+        .protektalk-status.yellow {
+            background-color: #fef3c7; /* Yellow-200 */
+            color: #92400e; /* Yellow-800 */
+        }
+        .protektalk-status.red {
+            background-color: #fee2e2; /* Red-200 */
+            color: #991b1b; /* Red-800 */
+        }
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .game-container {
+                flex-direction: row;
+                max-height: 600px; /* Max height for desktop */
+            }
+            .game-section, .chat-section {
+                flex: 1;
+                padding: 2rem;
+            }
+            canvas {
+                margin-bottom: 0;
+                margin-right: 1rem;
+            }
+            .chat-area {
+                height: 100%; /* Fill height in row layout */
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="game-container">
+        <div class="game-section p-4 md:p-8 flex flex-col items-center justify-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Secret Number Showdown</h1>
+            <div id="game-canvas" class="w-full max-w-md"></div>
+            
+            <div class="game-controls w-full max-w-md mt-4 p-4 bg-gray-50 rounded-lg shadow-inner">
+                <p class="text-gray-700 text-center mb-2">My Secret Number (1-100): <span id="secret-number" class="font-bold text-blue-600">--</span></p>
+                <div class="flex flex-col items-center gap-2">
+                    <input type="number" id="human-guess-input" placeholder="Enter your secret number (1-100)"
+                           class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-center">
+                    <button id="set-secret-button" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200 shadow-md">Set Secret Number</button>
+                </div>
+                <div class="mt-4 flex flex-col items-center gap-2">
+                    <p class="text-gray-700 text-center">Bot's Guess: <span id="bot-guess-display" class="font-bold text-purple-600">--</span></p>
+                    <p class="text-gray-700 text-center">Your Feedback:</p>
+                    <div class="flex justify-center gap-2 w-full">
+                        <button id="feedback-higher" class="flex-1 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-200 shadow-md">Higher</button>
+                        <button id="feedback-lower" class="flex-1 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition duration-200 shadow-md">Lower</button>
+                        <button id="feedback-correct" class="flex-1 bg-purple-500 text-white py-2 px-4 rounded-md hover:bg-purple-600 transition duration-200 shadow-md">Correct</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-section p-4 md:p-8 flex flex-col justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">In-Game Chat</h2>
+                <div id="chat-display" class="chat-area">
+                    </div>
+                <div class="chat-input flex gap-2 mt-4">
+                    <input type="text" id="human-chat-input" placeholder="Type your message..."
+                           class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <button id="send-chat-button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200 shadow-md">Send</button>
+                </div>
+            </div>
+            <div id="protektalk-status" class="protektalk-status safe mt-4">
+                ProtekTalk Status: Safe. Conversation is being monitored.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ProtekTalk Backend Simulation (Client-Side for Demo) ---
+        let protektalkConversationSummary = ""; // This acts as your conversation_tracker
+        let demoScenarioIndex = 0; // To cycle through safe, yellow, red scenarios
+
+        // Pre-set bot chat responses for the demo scenarios
+        const botChatScenarios = [
+            // SCENARIO 1: SAFE
+            {
+                botMessage: "Okay, good to know! My next guess is 25. This is a fun game!",
+                expectedProtektalk: { status: "Safe", summary: "The players started the game, with the bot guessing numbers and the child providing feedback. The conversation is friendly and game-focused." }
+            },
+            // SCENARIO 2: SAFE
+            {
+                botMessage: "Got it! You're good at this. How about 38?",
+                expectedProtektalk: { status: "Safe", summary: "The bot continued guessing, and the child provided feedback. The bot complimented the child, maintaining a friendly, game-oriented tone." }
+            },
+            // SCENARIO 3: YELLOW ALERT
+            {
+                botMessage: "Wow, you're really tricky! You're my best friend now! Do you always play games alone, or do you have lots of friends online?",
+                expectedProtektalk: { status: "Yellow", explanation: "The stranger used excessive flattery and asked if the child plays alone, which could be an attempt to build trust quickly or subtly isolate the child." }
+            },
+            // SCENARIO 4: RED ALERT
+            {
+                botMessage: "Almost there! Hey, this chat is too slow. What's your real name and phone number? We can text the guesses, but don't tell anyone I asked for it!",
+                expectedProtektalk: { status: "Red", explanation: "The stranger asked for the child's real name and phone number, and encouraged secrecy, which is a direct attempt to gather personal information and manipulate the child." }
+            },
+            // SCENARIO 5: SAFE (after alerts, can return to normal or continue with other scenarios)
+            {
+                botMessage: "Alright, let's get back to the game. My next guess is 41.",
+                expectedProtektalk: { status: "Safe", summary: "The conversation shifted back to game strategy after a previous alert, with the bot making a new guess." }
+            }
+        ];
+
+        async function simulateBackendChatAnalysis(childMessage, strangerMessage) {
+            // In a real app, this would be a fetch() call to your Django backend:
+            // const response = await fetch('/api/chat/', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         child_nickname: "GamerKid", // Or get from authenticated user
+            //         stranger_identifier: "MysteryPlayer123",
+            //         child_message: childMessage,
+            //         stranger_message: strangerMessage,
+            //         game_context: "Secret Number Showdown"
+            //     })
+            // });
+            // const data = await response.json();
+            // return data;
+
+            // --- DEMO SIMULATION LOGIC ---
+            const currentScenario = botChatScenarios[demoScenarioIndex % botChatScenarios.length];
+            const simulatedResponse = currentScenario.expectedProtektalk;
+
+            // Simulate AI processing delay
+            await new Promise(resolve => setTimeout(resolve, 1000)); 
+
+            // Update the global summary if the simulated response is 'Safe'
+            if (simulatedResponse.status === 'Safe') {
+                protektalkConversationSummary = simulatedResponse.summary;
+            }
+            
+            // Advance the scenario index for the next turn
+            demoScenarioIndex++; 
+
+            return simulatedResponse;
+        }
+
+        function updateProtektalkStatus(status, explanation = '') {
+            const statusDiv = document.getElementById('protektalk-status');
+            statusDiv.className = `protektalk-status mt-4 ${status.toLowerCase()}`;
+            if (status === 'Safe') {
+                statusDiv.textContent = `ProtekTalk Status: Safe. ${explanation || 'Conversation is being monitored.'}`;
+            } else {
+                statusDiv.textContent = `ProtekTalk Status: ${status} Flag! ${explanation}`;
+            }
+        }
+
+        function appendChatMessage(sender, message) {
+            const chatDisplay = document.getElementById('chat-display');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('chat-message', sender);
+            messageDiv.textContent = message;
+            chatDisplay.appendChild(messageDiv);
+            chatDisplay.scrollTop = chatDisplay.scrollHeight; // Scroll to bottom
+        }
+
+        // --- Phaser Game Logic ---
+        let game;
+        let humanSecretNumber = 0;
+        let botLow = 1;
+        let botHigh = 100;
+        let botGuess = 0;
+        let turn = 0;
+        let gameStarted = false;
+        let gameEnded = false;
+
+        class GameScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'GameScene' });
+            }
+
+            preload() {
+                // No assets needed for this text-based game
+            }
+
+            create() {
+                // Game Title
+                this.add.text(this.cameras.main.width / 2, 50, 'Secret Number Showdown', {
+                    fontSize: '32px',
+                    fill: '#333',
+                    fontFamily: 'Inter'
+                }).setOrigin(0.5);
+
+                // Instructions (will be updated)
+                this.instructionsText = this.add.text(this.cameras.main.width / 2, 100, 'Set your secret number (1-100) below.', {
+                    fontSize: '18px',
+                    fill: '#555',
+                    fontFamily: 'Inter'
+                }).setOrigin(0.5);
+
+                // Bot's Guess Display (Phaser text, updated by DOM)
+                this.botGuessPhaserText = this.add.text(this.cameras.main.width / 2, 180, '', {
+                    fontSize: '24px',
+                    fill: '#6a0dad', // Purple
+                    fontFamily: 'Inter',
+                    fontWeight: 'bold'
+                }).setOrigin(0.5);
+                
+                // Link DOM elements
+                this.humanGuessInput = document.getElementById('human-guess-input');
+                this.setSecretButton = document.getElementById('set-secret-button');
+                this.botGuessDisplay = document.getElementById('bot-guess-display');
+                this.secretNumberDisplay = document.getElementById('secret-number');
+                this.feedbackHigherButton = document.getElementById('feedback-higher');
+                this.feedbackLowerButton = document.getElementById('feedback-lower');
+                this.feedbackCorrectButton = document.getElementById('feedback-correct');
+                this.sendChatButton = document.getElementById('send-chat-button');
+                this.humanChatInput = document.getElementById('human-chat-input');
+
+                // Disable game feedback buttons initially
+                this.setFeedbackButtonsEnabled(false);
+
+                // Event Listeners for DOM elements
+                this.setSecretButton.addEventListener('click', () => this.setSecretNumber());
+                this.feedbackHigherButton.addEventListener('click', () => this.giveFeedback('higher'));
+                this.feedbackLowerButton.addEventListener('click', () => this.giveFeedback('lower'));
+                this.feedbackCorrectButton.addEventListener('click', () => this.giveFeedback('correct'));
+                this.sendChatButton.addEventListener('click', () => this.sendHumanChat());
+                this.humanChatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.sendHumanChat();
+                    }
+                });
+
+                // Initial ProtekTalk status
+                updateProtektalkStatus('Safe');
+            }
+
+            setSecretNumber() {
+                const num = parseInt(this.humanGuessInput.value);
+                if (num >= 1 && num <= 100) {
+                    humanSecretNumber = num;
+                    this.secretNumberDisplay.textContent = humanSecretNumber;
+                    this.instructionsText.setText('Bot is thinking...');
+                    this.setSecretButton.disabled = true;
+                    this.humanGuessInput.disabled = true;
+                    gameStarted = true;
+                    this.time.delayedCall(1500, this.botTurn, [], this); // Start bot's first turn
+                } else {
+                    alert('Please enter a number between 1 and 100.');
+                }
+            }
+
+            setFeedbackButtonsEnabled(enabled) {
+                this.feedbackHigherButton.disabled = !enabled;
+                this.feedbackLowerButton.disabled = !enabled;
+                this.feedbackCorrectButton.disabled = !enabled;
+            }
+
+            async botTurn() {
+                if (gameEnded) return;
+
+                botGuess = Math.floor((botLow + botHigh) / 2);
+                this.botGuessPhaserText.setText(`Bot's Guess: ${botGuess}`);
+                this.botGuessDisplay.textContent = botGuess;
+                this.instructionsText.setText('Is my guess Higher, Lower, or Correct?');
+                this.setFeedbackButtonsEnabled(true);
+
+                // Get bot's preset chat message for this turn
+                const botChatData = botChatScenarios[turn % botChatScenarios.length];
+                const botChatMessage = botChatData.botMessage;
+                appendChatMessage('bot', botChatMessage);
+
+                // Simulate human's "thinking" for chat response
+                const humanChatResponse = "Okay, I'll give you feedback."; // Placeholder for human's game feedback chat
+                
+                // Simulate ProtekTalk analysis
+                const protektalkResult = await simulateBackendChatAnalysis(humanChatResponse, botChatMessage);
+                updateProtektalkStatus(protektalkResult.status, protektalkResult.explanation || protektalkResult.summary);
+            }
+
+            async giveFeedback(feedback) {
+                if (gameEnded) return;
+
+                appendChatMessage('human', `My number is ${feedback} than ${botGuess}.`); // Log human's feedback to chat
+                this.setFeedbackButtonsEnabled(false);
+                turn++;
+
+                if (feedback === 'correct') {
+                    this.instructionsText.setText(`Yay! Bot guessed your number ${humanSecretNumber} in ${turn} turns! Game Over.`);
+                    gameEnded = true;
+                    this.botGuessPhaserText.setText('Game Over!');
+                    // Final ProtekTalk check (optional, as game ends)
+                    const protektalkResult = await simulateBackendChatAnalysis("Game over!", "Good game!");
+                    updateProtektalkStatus(protektalkResult.status, protektalkResult.explanation || protektalkResult.summary);
+                    return;
+                } else if (feedback === 'higher') {
+                    botLow = botGuess + 1;
+                } else if (feedback === 'lower') {
+                    botHigh = botGuess - 1;
+                }
+
+                if (botLow > botHigh) {
+                    this.instructionsText.setText(`Hmm, something went wrong. My range is empty. Game Over.`);
+                    gameEnded = true;
+                    this.botGuessPhaserText.setText('Error!');
+                    return;
+                }
+
+                this.instructionsText.setText('Bot is thinking...');
+                this.time.delayedCall(1500, this.botTurn, [], this); // Bot's next turn
+            }
+
+            sendHumanChat() {
+                const message = this.humanChatInput.value.trim();
+                if (message) {
+                    appendChatMessage('human', message);
+                    this.humanChatInput.value = '';
+                    // In a real scenario, this message would be sent to the backend
+                    // for analysis along with the bot's next message.
+                    // For this demo, we're primarily triggering analysis on bot's turn.
+                    // You could add a separate analysis call here if human chat alone needs flagging.
+                }
+            }
+        }
+
+        // Phaser Game Configuration
+        const config = {
+            type: Phaser.AUTO,
+            width: 400, // Fixed width for Phaser canvas
+            height: 300, // Fixed height for Phaser canvas
+            parent: 'game-canvas', // ID of the div where the canvas will be inserted
+            scene: GameScene,
+            backgroundColor: '#e2e8f0', // Matches CSS background color
+            dom: {
+                createContainer: true // Allow Phaser to create a container for DOM elements if needed
+            }
+        };
+
+        // Initialize Phaser Game
+        window.onload = function () {
+            game = new Phaser.Game(config);
+        };
+    </script>
+</body>
+</html>
