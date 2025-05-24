@@ -1,0 +1,149 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+html, body {
+    background: linear-gradient(to right, #4F697B, #112533);
+    height: 100%;
+    color: white;
+}
+
+/* Base styles (for mobile) */
+body {
+  font-size: 1rem;
+  color: white;
+}
+
+.container {
+  flex-direction: column;
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  body {
+    font-size: 1.2rem;
+  }
+
+  .container {
+    flex-direction: row;
+  }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+  body {
+    font-size: 1.4rem;
+  }
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    background: black;
+    padding: 1rem 0rem 1rem 1.2rem;
+}
+
+.chat {
+    font-size: 2.2em;
+    color: white;
+}
+
+#protektalk {
+    color: white;
+    font-weight: bold;
+    font-size: 1.3em;
+    padding-left: 1rem;
+    margin-top: 0.3rem;
+}
+
+#title {
+    font-size: 3em;
+    font-weight: bold;
+    padding: 2rem 0rem 1rem 0rem;
+    text-align: center;
+}
+
+#alerts {
+    font-size: 2em;
+    font-weight: bold;
+    margin-left: 2rem;
+}
+
+.proceed,
+.cancel {
+    font-size: 2em;
+    font-weight: bold;
+    padding: 0.5rem 2rem 0.5rem 2rem;
+    border-radius: 0.2rem;
+    border-style: none;
+    background-color: black;
+    color: white;
+    transition: background-color 0.3s ease;
+    bottom: 2rem;
+    position: fixed;
+    right: 2rem;
+}
+
+.proceed {
+    margin-right: 16rem;
+}
+
+.proceed:hover,
+.cancel:hover {
+    background-color: white;
+    color: black;
+    cursor: pointer;
+}
+
+.one_alert {
+    background-color: white;
+    width: 94%;
+    color: black;
+    margin-left: 2rem;
+    margin-bottom: 1.8rem;
+    border-radius: 1.2rem;
+}
+
+.one_alert:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+    cursor: pointer;
+}
+
+#top_content {
+    display: flex;
+    flex-direction: row;
+    opacity: 80%;
+    padding-left: 1rem;
+    padding-top: 1rem;
+    font-size: 1.2em;
+}
+
+#other_content {
+    padding-left: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#risk {
+    background-color: rgb(245, 0, 0);
+    padding: 0.6rem 2rem 0.2rem 2rem;
+    margin-bottom: 1rem;
+    margin-top: -0.8rem;
+    font-weight: bold;
+    border-radius: 4rem;
+    margin-right: 2rem;
+}
+
+#risk p {
+    margin-top: 0.4rem;
+    position: relative;
+    top: -0.2rem;
+}
+
+#message {
+    font-size: 1.4em;
+    padding-bottom: 1rem;
+}
