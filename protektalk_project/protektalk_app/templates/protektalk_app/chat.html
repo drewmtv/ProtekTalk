@@ -1,0 +1,78 @@
+{% extends 'protektalk_app/layout.html' %}
+
+{% block title %}
+Child's Protection Online - ProtekTalk
+{% endblock %}
+
+{% block body %}
+
+<!-- Holds the chatbox -->
+{% include 'protektalk_app/conversation-box.html' %}
+
+<!-- HTML layout code above -->
+
+<script>
+    const chatbox = document.getElementById('chatbox');
+    const sendBtn = document.getElementById('send-message-btn');
+    const chatThread = document.querySelector('.chat-thread');
+
+    sendBtn.addEventListener('click', () => {
+        const message = chatbox.value.trim();
+        if (!message) return;
+
+        // Append to chat thread (as child)
+        const div = document.createElement('div');
+        div.className = 'child';
+        div.textContent = message;
+        chatThread.appendChild(div);
+        chatbox.value = '';
+
+        fetch('/API/chat/process/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                child_nickname: 'demo_kid',
+                stranger_identifier: 'preset_bot',
+                child_message: message,
+                stranger_message: '',
+                game_context: 'demo simulation'
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const chatbox = document.getElementById('chatbox');
+            chatbox.classList.remove('yellow-alert', 'red-alert');
+
+            if (data.alert_type === 'Yellow') {
+                chatbox.classList.add('yellow-alert');
+            } else if (data.alert_type === 'Red') {
+                chatbox.classList.add('red-alert');
+                chatbox.disabled = true;  // Mute the child
+            }
+
+            if (data.alert_type) {
+                console.log('⚠️ ALERT:', data.alert_type, data.explanation);
+            }
+
+            if (data.stranger_reply) {
+                const strangerDiv = document.createElement('div');
+                strangerDiv.className = 'stranger';
+                strangerDiv.textContent = data.stranger_reply;
+                chatThread.appendChild(strangerDiv);
+                chatThread.scrollTop = chatThread.scrollHeight;
+            }
+        });
+
+    });
+
+    function getCSRFToken() {
+        const match = document.cookie.match(/csrftoken=([\w-]+)/);
+        return match ? match[1] : '';
+  }
+</script>
+</body>
+
+{% endblock %}

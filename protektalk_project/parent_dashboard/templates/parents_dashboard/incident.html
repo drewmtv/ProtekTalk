@@ -1,0 +1,47 @@
+{% extends 'parents_dashboard/layout.html' %}
+{% load static %}
+
+{% block title %}
+Enter your incident report
+{% endblock %}
+
+{% block style %}
+{% static 'parents_dashboard/css/incident.css' %}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="header">
+        <a href="{% url 'parent_dashboard:index' %}">
+            <iconify-icon icon="clarity:talk-bubbles-solid" class="chat"></iconify-icon>
+        </a>
+        <p id="protektalk">ProtekTalk</p>
+    </div>
+    <div class="container-fluid">
+        <p id="title" class="content">INCIDENT REPORT SUBMISSION</p>
+        <form action="/parent_dashboard/" method="post">
+            {% csrf_token %}
+            <div class="input_container">            
+                    <label id="enter" class="content">Enter incident report number</label>
+                    <input id="input" class="content" placeholder="e.g 1307" name="incident_report_number" required>
+            </div>
+            <div class="button_container">
+                <button>Submit</button>
+            </div>
+        </form>
+        
+            <p id="title" class="details">INCIDENT REPORT DETAILS</p>
+            <p id="number">Incident No. <b>{{ incident_report_number }}</b></p>
+
+            <div id="box_container">
+                <div id="report_box">
+                    <p>Status: <b>Under investigation.</b></p>
+                    <p>Date of incident: <b>04/25/25</b></p>
+                    <p>Agency phone number: <b>123-456-789</b></p>
+                </div>
+            </div>
+        
+        
+    </div>
+</div>
+{% endblock %}

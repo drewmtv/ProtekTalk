@@ -1,0 +1,261 @@
+:root {
+    /* Define some CSS variables for easier theming and responsiveness */
+    --conversation-padding: 2.5vmin; /* Using vmin for consistent padding relative to viewport */
+    --border-radius-large: 1.5vmin;
+    --border-radius-small: 0.75vmin;
+    --message-max-width: 60%; /* Slightly increased max-width for messages */
+    --chatbox-height: 8vmin; /* Responsive chatbox height */
+
+    /* --- Adaptable Light Mode Color Palette --- */
+    --body-bg: #f0f2f5; /* Background for the entire page */
+    --primary-bg: #FFFFFF; /* Lightest background for main content area (e.g., chat thread) */
+    --secondary-bg: #F0F2F5; /* Slightly darker background for containers (e.g., chatbox holder) */
+    --border-color: #E0E0E0; /* Subtle border/separator color */
+    
+    --text-color-dark: #333333; /* Dark text for most content */
+    --text-color-light: #FFFFFF; /* Light text for dark backgrounds */
+    
+    --message-child-bg: #E7EEF6; /* A soft, light blue for "child" messages */
+    --message-child-text: var(--text-color-dark); 
+    
+    --message-stranger-bg: #F0F0F0; /* A very light gray for "stranger" messages */
+    --message-stranger-text: var(--text-color-dark);
+
+    --accent-color: #007bff; /* A standard, professional blue for interactive elements (send button) */
+    --accent-color-hover: #0056b3; /* Darker blue on hover */
+    --accent-color-text: var(--text-color-light); /* White text on accent color */
+
+    /* Transition for smooth theme change */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- Dark Mode Specific Color Palette --- */
+body.dark-mode {
+    --body-bg: #1a1a2e; /* Dark background for the entire page */
+    --primary-bg: #22223b; /* Dark background for main content area */
+    --secondary-bg: #2c2c4a; /* Slightly lighter dark for chatbox holder */
+    --border-color: #3b3b5c; /* Darker border */
+    
+    --text-color-dark: #E0E0E0; /* Light text for dark backgrounds */
+    --text-color-light: #333333; /* Dark text (less common in dark mode) */
+    
+    --message-child-bg: #4a4a75; /* A slightly darker blue for "child" messages */
+    --message-child-text: #F0F0F0; /* Light text on dark message */
+    
+    --message-stranger-bg: #3c3c5e; /* A dark gray for "stranger" messages */
+    --message-stranger-text: #E0E0E0; /* Light text on dark message */
+
+    --accent-color: #55aaff; /* A brighter blue for contrast in dark mode */
+    --accent-color-hover: #77bbff; 
+    --accent-color-text: #FFFFFF; /* Still white text on accent color */
+}
+
+/* Base styles applied to body and root elements */
+body {
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    background-color: var(--body-bg); /* Now uses a CSS variable */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    color: var(--text-color-dark);
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+.background-video {
+    position: fixed;        /* Stays in place even when scrolling */
+    top: 0;
+    left: 0;
+    width: 100vw;           /* Full width of viewport */
+    height: 100vh;          /* Full height of viewport */
+    object-fit: cover;      /* Ensures the video covers the space */
+    z-index: -1;            /* Behind all other content */
+    pointer-events: none;   /* Allows clicks to pass through */
+}
+
+/* Style for the toggle button container */
+.mode-toggle-container {
+    position: absolute; /* Position it relative to the viewport */
+    top: 2vmin;
+    right: 2vmin;
+    z-index: 1000; /* Ensure it's above other content */
+}
+
+#dark-mode-toggle {
+    background-color: var(--secondary-bg);
+    color: var(--text-color-dark);
+    border: 1px solid var(--border-color);
+    padding: 1vmin 2vmin;
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    font-size: clamp(0.7rem, 1.8vmin, 1rem);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+#dark-mode-toggle:hover {
+    background-color: var(--border-color);
+}
+
+
+.conversation-container {
+    display: flex;
+    flex-direction: column;
+    height: 200px; 
+    aspect-ratio: 19.5 / 9;
+    padding: var(--conversation-padding);
+    margin: auto;
+    border-radius: var(--border-radius-large);
+    background-color: var(--primary-bg); /* Uses primary background color */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    max-width: 95vw;
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    border: 1px solid var(--border-color); /* Uses border color */
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chat-thread {
+    background-color: var(--primary-bg); /* Still primary background */
+    flex-grow: 1;
+    margin-bottom: 1vmin;
+    padding: 1vmin;
+    overflow-y: auto;
+    border-radius: var(--border-radius-large);
+    display: flex;
+    flex-direction: column;
+    gap: 1vmin;
+    transition: background-color 0.3s ease;
+}
+
+.chat-thread > * {
+    max-width: var(--message-max-width);
+    text-wrap: break-word;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    padding: 1.5vmin 2vmin;
+    border-radius: var(--border-radius-small);
+    font-size: clamp(0.8rem, 2vmin, 1.1rem);
+    line-height: 1.4;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chat-thread > .child {
+    background-color: var(--message-child-bg);
+    align-self: flex-start;
+    color: var(--message-child-text); 
+}
+
+.chat-thread > .stranger {
+    background-color: var(--message-stranger-bg);
+    align-self: flex-end;
+    color: var(--message-stranger-text); 
+}
+
+.chatbox-holder {
+    background-color: var(--secondary-bg); /* Uses secondary background */
+    height: var(--chatbox-height);
+    margin-top: 1vmin;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 2vmin;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color); /* Uses border color */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#chatbox {
+    flex-grow: 1;
+    background-color: transparent;
+    border: none;
+    height: 70%;
+    font-size: clamp(0.9rem, 2.2vmin, 1.2rem);
+    color: var(--text-color-dark); /* Uses text color */
+    outline: none;
+    padding-right: 1vmin;
+    transition: color 0.3s ease;
+}
+
+/* Yellow Alert (⚠️ Light glow) */
+#chatbox.yellow-alert {
+    box-shadow: 0 0 10px 2px rgba(255, 255, 0, 0.6); /* light yellow */
+}
+
+/* Red Alert (🚨 Strong glow) */
+#chatbox.red-alert {
+    box-shadow: 0 0 15px 4px rgba(255, 0, 0, 0.8); /* intense red */
+}
+
+/* Placeholder color for #chatbox */
+#chatbox::placeholder {
+    color: var(--text-color-dark); /* Placeholder color changes with theme */
+    opacity: 0.6; /* Slightly transparent placeholder */
+    transition: color 0.3s ease;
+}
+
+
+#send-message-btn {
+    border-radius: 50px;
+    padding: 1.5vmin 3vmin;
+    background-color: var(--accent-color); 
+    border: none;
+    color: var(--accent-color-text); /* Uses accent text color */
+    cursor: pointer;
+    font-size: clamp(0.8rem, 2vmin, 1rem);
+    transition: background-color 0.2s ease, transform 0.1s ease, color 0.3s ease;
+    flex-shrink: 0;
+}
+
+#send-message-btn:hover {
+    background-color: var(--accent-color-hover);
+}
+
+#send-message-btn:active {
+    transform: translateY(1px);
+}
+
+/* Media Queries for fine-tuning on different screen sizes */
+@media (max-width: 768px) {
+    .conversation-container {
+        aspect-ratio: unset;
+        width: 95vw;
+        height: 85vh;
+    }
+
+    .chat-thread > * {
+        max-width: 70%;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --conversation-padding: 4vmin;
+        --border-radius-large: 2vmin;
+        --border-radius-small: 1vmin;
+    }
+
+    .conversation-container {
+        border-radius: 0;
+        padding: 2vmin;
+        box-shadow: none;
+        border: none;
+    }
+
+    .chatbox-holder {
+        border-radius: 0;
+        padding: 0 1.5vmin;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+    }
+
+    #send-message-btn {
+        padding: 1.5vmin 2.5vmin;
+    }
+
+    .mode-toggle-container {
+        top: 2vmin;
+        right: 2vmin;
+    }
+}

@@ -1,0 +1,159 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+html, body {
+    background: linear-gradient(to right, #4F697B, #112533);
+    height: auto;
+}
+
+/* Base styles (for mobile) */
+body {
+  font-size: 1rem;
+  color: white;
+}
+
+.container {
+  flex-direction: column;
+}
+
+.container-fluid {
+    width: 90%;
+    margin: auto;
+    height: 5 0%;
+}
+
+/* Tablet and up */
+@media (max-width: 768px) {
+  body {
+    font-size: 0.75rem;
+  }
+
+  .container {
+    flex-direction: row;
+  }
+}
+
+/* Desktop and up */
+@media (max-width: 1024px) {
+  body {
+    font-size: 0.75rem;
+  }
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    background: black;
+    padding: 1vh 0rem 1vh 1.2rem;
+}
+
+.chat {
+    font-size: 2.2em;
+    color: white;
+}
+
+#protektalk {
+    color: white;
+    font-weight: bolder;
+    font-size: 1.3em;
+    margin-top: 0.3rem;
+    padding-left: 1rem;
+}
+
+.content {
+    text-align: center;
+}
+
+.button_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.input_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#title {
+    font-size: 4em;
+    font-weight: bold;
+    padding: 2rem 0rem 4rem 0rem;
+}
+
+#enter {
+    font-size: 2em;
+    padding-bottom: 2rem;
+}
+
+input {
+    font-size: 2em;
+    border-radius: 4rem;
+    border-style: none;
+}
+
+#status {
+    font-size: 2em;
+    color: white;
+    padding-top: 4rem;
+}
+
+#more_information {
+    margin-top: 4rem;
+    a {
+        color: white;
+    }
+}
+
+button {
+    color: #112533;
+    font-size: 2em;
+    font-weight: bold;
+    padding: 1rem 2rem 1rem 2rem;
+    border-radius: 0.2rem;
+    border-style: none;
+    background-color: black;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #ffffff;
+    color: rgb(12, 15, 26);
+    cursor: pointer;
+}
+
+.details {
+    text-align: center;
+    margin-top: 4rem;
+}
+
+#number { 
+    color: white;
+    font-size: 2em;
+    text-align: center;
+    margin-top: -4rem;
+}
+
+#report_box {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: black;
+    padding: 2rem 4rem 2rem 4rem;
+    font-size: 2em;
+    width: auto;
+    margin-top: 4rem;
+}
+
+#box_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+    padding-bottom: 4rem;
+}

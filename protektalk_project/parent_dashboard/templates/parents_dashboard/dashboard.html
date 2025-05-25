@@ -1,0 +1,46 @@
+{% extends 'parents_dashboard/layout.html' %}
+{% load static %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block style %}
+{% static 'parents_dashboard/css/dashboard.css' %}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="header">
+        <a href="{% url 'parent_dashboard:index' %}">
+            <iconify-icon icon="clarity:talk-bubbles-solid" class="chat"></iconify-icon>
+        </a>
+        <a href="{% url 'parent_dashboard:index' %}">
+            <p id="protektalk">ProtekTalk</p>
+        </a>
+    </div>
+
+    <p id="title" class="content">DASHBOARD</p>
+    <p id="alerts">Alerts</p>
+
+    <div class="alert_list">
+        <div class="one_alert">
+            <div id="top_content">
+                <p>3:36 PM | &nbsp;</p>
+                <p>no. 1305</p>
+            </div>
+            <div id="other_content">
+                <p id="message">Player 4: Where's your address?</p>
+                <div id="risk">
+                    <p>High Risk</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="button_container">
+        <a href="{% url 'parent_dashboard:contact' %}"><button class="proceed">Proceed</button></a>
+        <a href="{% url 'parent_dashboard:index' %}"><button class="cancel">Cancel</button></a>
+    </div>
+</div>
+{% endblock %}

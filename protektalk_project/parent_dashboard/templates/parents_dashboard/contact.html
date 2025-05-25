@@ -1,0 +1,52 @@
+{% extends 'parents_dashboard/layout.html' %}
+{% load static %}
+
+{% block title %}
+Enter your contact
+{% endblock %}
+
+{% block style %}
+{% static 'parents_dashboard/css/contact.css' %}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="header">
+        <a href="{% url 'parent_dashboard:index' %}">
+            <iconify-icon icon="clarity:talk-bubbles-solid" class="chat"></iconify-icon>
+        </a>
+        <a href="{% url 'parent_dashboard:index' %}">
+            <p id="protektalk">ProtekTalk</p>
+        </a>
+    </div>
+
+    <p id="title" class="content">CONTACT INFORMATION</p>
+    <p id="enter">Please enter your contact details below</p>
+    <div class="main">
+        <div class="input_container">
+                <table>
+                    <td>
+                        <tr><label class="labels" for="full-name">Full Name:</label></tr>
+                        <input id="full-name" class="content_one" placeholder="Full Name">
+                    </td>
+                    <br>
+                    <td>
+                        <tr><label class="labels" for="contact-number">Contact Number:</label></tr>
+                        <tr><input id="contact-number" class="content_two" placeholder="Contact Number"></tr>
+                    </td>
+                    <br>
+                    <td>
+                        <tr><label class="labels" for="email">Email (optional):</label></tr>
+                        <tr><input id="email" class="content_three" placeholder="Email (optional)"></tr>
+                    </td>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="button_container">
+        <button>Submit</button>
+    </div>
+
+</div>
+{% endblock %}

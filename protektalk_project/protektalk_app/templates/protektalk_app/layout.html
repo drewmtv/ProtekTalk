@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'protektalk_app/photos/ChatGPT Image May 18, 2025, 11_35_21 PM.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'protektalk_app/styles/styles.css' %}">
+    <script src="{% static 'protektalk_app/js/dark-mode-toggle.js' %}"></script>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>    
+    <video autoplay muted loop playsinline id="bg-video" class="background-video">
+        <source src="{% static 'protektalk_app/video/videobackgroundplayback.mp4' %}" type="video/mp4">
+    </video>
+    <div class="container">
+        {% block body %}{% endblock %}
+    </div>
+    <div class="mode-toggle-container">
+        <button id="dark-mode-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    </div>
+
+    <script>
+        const video = document.getElementById("bg-video");
+        video.addEventListener("loadedmetadata", () => {
+            video.currentTime = 144; // start at 2:22
+        });
+    </script>
+</body>
+</html>
